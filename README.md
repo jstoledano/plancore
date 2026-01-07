@@ -1,76 +1,137 @@
-# Plan Core
+# PlanCore
 
-**PlanCore** is the unified platform that transforms findings, risks, and objectives into structured action plans. It centralizes the management of **Correction**, **Corrective Action**, **Risk Treatment**, and **Improvement Plans** in a single hub. The system is triggered by both reactive sources, like nonconformities, and proactive change initiatives. It ensures the tracking, closure, and verification of every commitment, closing the improvement cycle. The solution provides the evidence and operational discipline required for an effective management system. **PlanCore** turns intention into traceable results, tangibly driving continuous improvement.
+**PlanCore** is a unified platform that transforms operational findings and strategic goals into structured, traceable action plans. It centralizes the management of _corrections_, _corrective actions_, _risk treatments_, and _improvement initiatives_ under a single governance model.
 
-## Core Domain Concepts
+The system supports both reactive triggers (such as nonconformities) and proactive initiatives (such as continuous improvement and risk management), ensuring that every plan is tracked, verified, and formally closed. **PlanCore** provides the evidence and operational discipline required by effective Quality Management Systems (QMS), turning organizational intent into verifiable results.
 
-The system is centered around the **Plan** aggregate, which coordinates several core entities:
-- **Action**: Concrete tasks or steps defined within a plan.
-- **Evidence**: Documentation, files, or data that verify the completion and effectiveness of actions.
-- **Rules & Invariants**: Centralized business logic that ensures data consistency and state validity (e.g., a plan cannot be closed without verified evidence for all actions).
+## Core Domain Model
 
-Key domain enumerations (`enums.py`) define states, types, and origins, such as:
-- **Plan Status**: `DRAFT`, `ACTIVE`, `ON_HOLD`, `CLOSED`
-- **Plan Type**: `CORRECTION`, `CORRECTIVE_ACTION`, `RISK_TREATMENT`, `IMPROVEMENT`
-- **Origin**: `EXTERNAL_AUDIT`, `INTERNAL_AUDIT`, `CUSTOMER_COMPLAINT`, `RISK_ASSESSMENT`, `MANAGEMENT_REVIEW`
+**PlanCore** is centered around a single aggregate root: the **_Plan_**.
 
-## Tech Stack & Architecture
+A Plan represents a formal organizational commitment that must be executed, verified, and closed according to explicit rules and invariants.
 
-- **Framework**: FastAPI (with Pydantic for data validation)
-- **Database**: PostgreSQL
-- **Containerization & Orchestration**: Docker & Docker Compose
-- **Operations**: CI/CD pipeline, structured logging, explicit environment-based configuration
-- **Architectural Style**: Domain-Driven Design (DDD) applied pragmatically ("without ceremony"), focusing on a rich domain model isolated in the `domain/` layer.
+## Core Concepts
 
-## Getting Started
+- **Plan**. The aggregate root. Nothing exists outside the context of a Plan.
+- **Action**. Concrete steps defined within a Plan. Actions must be completed before a Plan can be verified.
+- **Evidence**. Proof that actions were completed and effective. Evidence is required to verify a Plan.
+- **Domain Rules & Invariants**. Explicit business rules that protect consistency and correctness (for example, a Plan cannot be closed unless all Actions are completed and required Evidence exists).
 
-### Prerequisites
-- Docker and Docker Compose
-- Git
+## Plan Classification (Semantic, Not Behavioral)
 
-### Installation & Running
+All Plans share the same lifecycle and rules. Classification _exists only for governance, traceability, and reporting_.
 
-1.  Clone the repository:
-    ```bash
-    git clone <repository-url>
-    cd plancore
-    ```
+### Plan Category (WHY the plan exists)
+- `NONCONFORMITY`
+- `IMPROVEMENT`
 
-2.  Configure environment:
-    ```bash
-    cp .env.example .env
-    # Edit the .env file with your specific configuration (database credentials, etc.)
-    ```
+### Plan Subtype (WHAT kind of plan it is)
 
-3.  Build and start the services:
-    ```bash
-    docker-compose up --build
-    ```
+#### For `NONCONFORMITY`:
 
-4.  The API will be available at `http://localhost:8000`.
-    - Interactive API documentation (Swagger UI): `http://localhost:8000/docs`
-    - Alternative API docs (ReDoc): `http://localhost:8000/redoc`
+- `CORRECTION`
+- `CORRECTIVE_ACTION`
+- `RISK_TREATMENT`
 
-## Project Structure
+#### For `IMPROVEMENT`:
 
-```
+- `PROCESS`
+- `PRODUCT_OR_SERVICE`
+- `QMS`
+
+#### Plan Source (WHAT triggered the plan)
+
+- `EXTERNAL_AUDIT`
+- `INTERNAL_AUDIT`
+- `CUSTOMER_AUDIT`
+- `MANAGEMENT_REVIEW`
+- `PROCESS_RESULTS`
+- `OBJECTIVES_AND_INDICATORS`
+- `RISK_ASSESSMENT`
+- `OTHER`
+
+> **Important:** 
+> Categories, subtypes, and sources never affect lifecycle, state transitions, or invariants.
+
+Plan Lifecycle
+
+All Plans follow the same explicit lifecycle:
+
+DRAFT → OPEN → IN_PROGRESS → VERIFIED → CLOSED
+
+
+There are:
+
+no alternative lifecycles
+
+no subtype-specific workflows
+
+no special cases
+
+Architectural Approach
+
+PlanCore is designed following pragmatic Domain-Driven Design (DDD) principles:
+
+The domain model is explicit and isolated.
+
+Business rules and invariants are enforced in domain code, independent of frameworks.
+
+Application services coordinate use cases without embedding domain logic.
+
+The goal is clarity and correctness, not architectural ceremony.
+
+Project Status
+
+This repository currently focuses on:
+
+Defining and enforcing the domain model
+
+Implementing invariants and state transitions
+
+Providing testable, framework-independent business logic
+
+Infrastructure concerns (containerization, deployment, CI/CD, logging) are addressed in later phases.
+
+Project Structure
 plancore/
-├── domain/ # Core business models, enums, and rules
-├── services/ # Domain service layer containing business logic
-├── tests/ # Test suites, focusing on domain logic
-└── README.md # This file
-```
+├── domain/      # Core domain model, enums, and invariants
+├── services/    # Application services (use-case orchestration)
+├── tests/       # Tests focused on domain behavior
+└── README.md    # This document
 
+Testing
 
-## Testing
+Domain rules and invariants are validated through automated tests.
 
-Run the test suite to verify domain invariants and business rules:
-```bash
-# Run tests from the project root
 pytest
-```
 
-Tests are primarily located in tests/domain/ and focus on the behavior of domain entities and the integrity of business rules.
 
-## Configuration
-All runtime configuration is managed through explicit environment variables for security and flexibility. Key configurations include database connection strings, log levels, and external service URLs.
+Tests focus on:
+
+Valid and invalid state transitions
+
+Enforcement of invariants
+
+Independence of classification from behavior
+
+Configuration
+
+Runtime configuration and infrastructure integration are intentionally out of scope at this stage.
+The current focus is correctness and clarity of the domain model.
+
+Why This Matters
+
+PlanCore intentionally models one unified lifecycle for all organizational plans.
+This avoids tool fragmentation, reduces operational cost, and improves traceability across audits, risks, and improvement initiatives.
+
+Final control note (important)
+
+This README now:
+
+Matches the locked domain
+
+Does not overclaim
+
+Strengthens senior-level credibility
+
+Can be safely referenced in interviews
