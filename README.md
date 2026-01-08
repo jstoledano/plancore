@@ -53,85 +53,72 @@ All Plans share the same lifecycle and rules. Classification _exists only for go
 > **Important:** 
 > Categories, subtypes, and sources never affect lifecycle, state transitions, or invariants.
 
-Plan Lifecycle
+### Plan Lifecycle
 
 All Plans follow the same explicit lifecycle:
 
+```
 DRAFT → OPEN → IN_PROGRESS → VERIFIED → CLOSED
-
+```
 
 There are:
 
-no alternative lifecycles
+- no alternative lifecycles
+- no subtype-specific workflows
+- no special cases
 
-no subtype-specific workflows
+### Architectural Approach
 
-no special cases
+PlanCore is designed following **pragmatic Domain-Driven Design (DDD) principles**:
 
-Architectural Approach
+- The domain model is explicit and isolated.
+- Business rules and invariants are enforced in domain code, independent of frameworks.
+- Application services coordinate use cases without embedding domain logic.
 
-PlanCore is designed following pragmatic Domain-Driven Design (DDD) principles:
+The goal is **clarity and correctness**, not architectural ceremony.
 
-The domain model is explicit and isolated.
-
-Business rules and invariants are enforced in domain code, independent of frameworks.
-
-Application services coordinate use cases without embedding domain logic.
-
-The goal is clarity and correctness, not architectural ceremony.
-
-Project Status
+### Project Status
 
 This repository currently focuses on:
 
-Defining and enforcing the domain model
-
-Implementing invariants and state transitions
-
-Providing testable, framework-independent business logic
+- Defining and enforcing the domain model
+- Implementing invariants and state transitions
+- Providing testable, framework-independent business logic
 
 Infrastructure concerns (containerization, deployment, CI/CD, logging) are addressed in later phases.
 
-Project Structure
+#### Project Structure
+
+```
 plancore/
 ├── domain/      # Core domain model, enums, and invariants
 ├── services/    # Application services (use-case orchestration)
 ├── tests/       # Tests focused on domain behavior
 └── README.md    # This document
+```
 
-Testing
+### Testing
 
 Domain rules and invariants are validated through automated tests.
 
+```
 pytest
-
+```
 
 Tests focus on:
 
-Valid and invalid state transitions
+- Valid and invalid state transitions
+- Enforcement of invariants
+- Independence of classification from behavior
 
-Enforcement of invariants
+### Configuration
 
-Independence of classification from behavior
+Runtime configuration and infrastructure integration are intentionally **out of scope** at this stage.
 
-Configuration
-
-Runtime configuration and infrastructure integration are intentionally out of scope at this stage.
 The current focus is correctness and clarity of the domain model.
 
-Why This Matters
+#### Why This Matters
 
-PlanCore intentionally models one unified lifecycle for all organizational plans.
+PlanCore intentionally models **one unified lifecycle** for all organizational plans.
+
 This avoids tool fragmentation, reduces operational cost, and improves traceability across audits, risks, and improvement initiatives.
-
-Final control note (important)
-
-This README now:
-
-Matches the locked domain
-
-Does not overclaim
-
-Strengthens senior-level credibility
-
-Can be safely referenced in interviews
